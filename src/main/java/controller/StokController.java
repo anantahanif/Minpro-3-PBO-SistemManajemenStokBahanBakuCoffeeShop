@@ -2,32 +2,29 @@ package controller;
 
 import java.util.ArrayList;
 import model.Bahan;
-import model.BahanCair;
-import model.BahanPadat;
+import model.BahanDAO;
 
 public class StokController {
-    private final ArrayList<Bahan> listBahan;
+    private final BahanDAO bahanDAO;
 
     public StokController() {
-        this.listBahan = new ArrayList<>();
-        initDummyData();
-    }
-
-    private void initDummyData() {
-        listBahan.add(new BahanCair("C01", "Susu Fresh Milk", 15, "Liter", "Susu"));
-        listBahan.add(new BahanPadat("P01", "Biji Kopi Espresso", 10, "Kg", "Biji"));
+        this.bahanDAO = new BahanDAO();
     }
 
     public void tambahBahan(Bahan bahan) {
-        listBahan.add(bahan);
-        System.out.println("Berhasil menambahkan bahan: " + bahan.getNamaBahan());
+        if (bahanDAO.tambahBahan(bahan)) {
+            System.out.println("Berhasil menambahkan bahan ke database: " + bahan.getNamaBahan());
+        } else {
+            System.out.println("Gagal menambahkan bahan ke database.");
+        }
     }
 
     public void tampilkanSemuaBahan() {
+        ArrayList<Bahan> listBahan = bahanDAO.getAllBahan();
         if (listBahan.isEmpty()) {
-            System.out.println("Data bahan baku masih kosong.");
+            System.out.println("Data bahan baku di database masih kosong.");
         } else {
-            System.out.println("\n=== Daftar Stok Bahan Baku ===");
+            System.out.println("\n=== Daftar Stok Bahan Baku (Database MySQL) ===");
             for (Bahan bahan : listBahan) {
                 bahan.tampilkanInfo();
             }
@@ -35,6 +32,7 @@ public class StokController {
     }
 
     public Bahan getBahanById(String idBahan) {
+        ArrayList<Bahan> listBahan = bahanDAO.getAllBahan();
         for (Bahan bahan : listBahan) {
             if (bahan.getIdBahan().equalsIgnoreCase(idBahan)) {
                 return bahan;
@@ -48,21 +46,14 @@ public class StokController {
     }
 
     public boolean updateBahan(String idBahan, String namaBaru, String kemasanBaru) {
-        Bahan bahan = getBahanById(idBahan);
-        if (bahan != null) {
-            bahan.setNamaBahan(namaBaru);
-            bahan.setKemasan(kemasanBaru);
-            return true;
-        }
-        return false;
+        return bahanDAO.updateBahan(idBahan, namaBaru, kemasanBaru);
+    }
+
+    public boolean updateStokDatabase(String idBahan, int stokBaru) {
+        return bahanDAO.updateStok(idBahan, stokBaru);
     }
 
     public boolean hapusBahan(String idBahan) {
-        Bahan bahan = getBahanById(idBahan);
-        if (bahan != null) {
-            listBahan.remove(bahan);
-            return true;
-        }
-        return false;
+        return bahanDAO.hapusBahan(idBahan);
     }
 }

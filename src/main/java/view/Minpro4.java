@@ -6,7 +6,7 @@ import model.Bahan;
 import model.BahanCair;
 import model.BahanPadat;
 
-public class Minpro3 {
+public class Minpro4 {
     private static final Scanner scanner = new Scanner(System.in);
     private static final StokController controller = new StokController();
 
@@ -16,11 +16,12 @@ public class Minpro3 {
         while (running) {
             System.out.println("\n=============================================");
             System.out.println("  SISTEM MANAJEMEN STOK BAHAN BAKU COFFEE SHOP");
+            System.out.println("           (TERINTEGRASI DATABASE JDBC)");
             System.out.println("=============================================");
             System.out.println("1. Tambah Bahan Baku");
             System.out.println("2. Tampilkan Semua Bahan Baku");
             System.out.println("3. Update Data Bahan Baku");
-            System.out.println("4. Kelola Stok (Interface & Overloading)");
+            System.out.println("4. Kelola Stok (Interface & Database Update)");
             System.out.println("5. Hapus Bahan Baku");
             System.out.println("6. Keluar");
             System.out.println("=============================================");
@@ -59,7 +60,7 @@ public class Minpro3 {
         String idBahan = readNonEmptyString("Masukkan ID Bahan: ");
 
         if (controller.isIdExist(idBahan)) {
-            System.out.println("Error: ID Bahan sudah terdaftar dalam sistem!");
+            System.out.println("Error: ID Bahan sudah terdaftar dalam database!");
             return;
         }
 
@@ -92,7 +93,7 @@ public class Minpro3 {
         String idBahan = readNonEmptyString("Masukkan ID Bahan yang ingin diubah: ");
 
         if (!controller.isIdExist(idBahan)) {
-            System.out.println("Data dengan ID tersebut tidak ditemukan.");
+            System.out.println("Data dengan ID tersebut tidak ditemukan di database.");
             return;
         }
 
@@ -100,9 +101,9 @@ public class Minpro3 {
         String kemasanBaru = readNonEmptyString("Masukkan Jenis Kemasan Baru: ");
 
         if (controller.updateBahan(idBahan, namaBaru, kemasanBaru)) {
-            System.out.println("Data bahan baku berhasil diperbarui.");
+            System.out.println("Data bahan baku di database berhasil diperbarui.");
         } else {
-            System.out.println("Gagal memperbarui data bahan baku.");
+            System.out.println("Gagal memperbarui data bahan baku di database.");
         }
     }
 
@@ -112,7 +113,7 @@ public class Minpro3 {
         Bahan bahan = controller.getBahanById(idBahan);
 
         if (bahan == null) {
-            System.out.println("Bahan baku tidak ditemukan!");
+            System.out.println("Bahan baku tidak ditemukan di database!");
             return;
         }
 
@@ -130,6 +131,8 @@ public class Minpro3 {
                 } else if (bahan instanceof BahanPadat) {
                     ((BahanPadat) bahan).tambahStok(jumlahTambah1);
                 }
+                controller.updateStokDatabase(bahan.getIdBahan(), bahan.getStok());
+                System.out.println("Perubahan stok berhasil disimpan ke database.");
                 break;
             case 2:
                 int jumlahTambah2 = readIntInput("Masukkan jumlah penambahan stok: ");
@@ -139,6 +142,8 @@ public class Minpro3 {
                 } else if (bahan instanceof BahanPadat) {
                     ((BahanPadat) bahan).tambahStok(jumlahTambah2, infoTambahan);
                 }
+                controller.updateStokDatabase(bahan.getIdBahan(), bahan.getStok());
+                System.out.println("Perubahan stok berhasil disimpan ke database.");
                 break;
             case 3:
                 int jumlahKurang = readIntInput("Masukkan jumlah pengurangan stok: ");
@@ -150,7 +155,8 @@ public class Minpro3 {
                 }
 
                 if (sukses) {
-                    System.out.println("Stok " + bahan.getNamaBahan() + " berhasil dikurangi.");
+                    controller.updateStokDatabase(bahan.getIdBahan(), bahan.getStok());
+                    System.out.println("Stok " + bahan.getNamaBahan() + " berhasil dikurangi dan diperbarui di database.");
                 } else {
                     System.out.println("Gagal mengurangi stok! Jumlah tidak valid atau melebihi stok yang ada.");
                 }
@@ -166,9 +172,9 @@ public class Minpro3 {
         String idBahan = readNonEmptyString("Masukkan ID Bahan yang ingin dihapus: ");
 
         if (controller.hapusBahan(idBahan)) {
-            System.out.println("Bahan baku dengan ID " + idBahan + " berhasil dihapus.");
+            System.out.println("Bahan baku dengan ID " + idBahan + " berhasil dihapus dari database.");
         } else {
-            System.out.println("Bahan baku dengan ID tersebut tidak ditemukan.");
+            System.out.println("Bahan baku dengan ID tersebut tidak ditemukan di database.");
         }
     }
 

@@ -1,6 +1,8 @@
 model\BahanPadat.class
 model\BahanCair.class
 model\StokOperasi.class
+model\BahanDAO.class
+config\Koneksi.class
+view\Minpro4.class
 controller\StokController.class
 model\Bahan.class
-view\Minpro3.class
